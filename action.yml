@@ -1,0 +1,25 @@
+name: 'Complexity Check'
+description: 'Check project complexity using pmat'
+author: 'paiml'
+
+inputs:
+  max-cyclomatic:
+    description: 'The maximum cyclomatic complexity allowed'
+    required: false
+    default: '20'
+  fail-on-violation:
+    description: 'Whether to fail the action if violations are found'
+    required: false
+    default: 'true'
+  comment-on-pr:
+    description: 'Whether to comment on the PR with the results'
+    required: false
+    default: 'true'
+  github-token:
+    description: 'The GitHub token to use for commenting on the PR'
+    required: false
+    default: '${{ github.token }}'
+
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
