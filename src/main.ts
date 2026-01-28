@@ -1,63 +1,42 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
-import * as exec from '@actions/exec';
 import { installPmat } from './installer';
+import { runPmat } from './pmat';
 import { generateMarkdown } from './markdown';
 
-export async function run(pmatOutput?: string) {
+async function run() {
   try {
     const maxCyclomatic = core.getInput('max-cyclomatic');
-    const failOnViolation = core.getBooleanInput('fail-on-violation');
-    const commentOnPr = core.getBooleanInput('comment-on-pr');
+    const failOnViolation = core.getInput('fail-on-violation');
+    const commentOnPr = core.getInput('comment-on-pr');
+    const token = core.getInput('github-token');
 
-    if (!pmatOutput) {
-      await installPmat();
+    await installPmat();
 
-      const options = {
-        listeners: {
-          stdout: (data: Buffer) => {
-            pmatOutput += data.toString();
-          },
-        },
-        ignoreReturnCode: true,
-      };
+    const results = await runPmat(maxCyclomatic, failOnViolation);
 
-      await exec.exec(
-        `pmat analyze complexity --fail-on-violation ${failOnViolation} --max-cyclomatic ${maxCyclomatic} --format JSON`,
-        [],
-        options
-      );
-    }
-
-    if (!pmatOutput) {
+    // Early return if no violations
+    if (!results.summary?.violations || results.summary.violations.length === 0) {
       return;
     }
 
-    const pmatResult = JSON.parse(pmatOutput);
+    if (commentOnPr === 'true' && github.context.payload.pull_request) {
+      const octokit = github.getOctokit(token);
+      const context = github.context;
 
-    if (pmatResult.violations.length > 0) {
-      const comment = generateMarkdown(pmatResult);
+      const commentBody = generateMarkdown(results.summary.violations, context.repo.owner, context.repo.repo, context.sha);
 
-      if (commentOnPr) {
-        const token = core.getInput('github-token');
-        if (token) {
-          const octokit = github.getOctokit(token);
-          const { owner, repo, number } = github.context.issue;
-          if (number) {
-            await octokit.rest.issues.createComment({
-              owner,
-              repo,
-              issue_number: number,
-              body: comment,
-            });
-          }
-        }
-      }
-
-      if (failOnViolation) {
-        core.setFailed('Complexity violations found');
-      }
+      await octokit.rest.issues.createComment({
+        ...context.repo,
+        issue_number: github.context.payload.pull_request.number,
+        body: commentBody
+      });
     }
+
+    if (failOnViolation === 'true' && results.summary.violations.some((v: any) => v.severity === 'error')) {
+      core.setFailed('Cyclomatic complexity violations found.');
+    }
+
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message);
