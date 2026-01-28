@@ -1,5 +1,5 @@
 {
-  "name": "code-review-bot",
+  "name": "pmat-action",
   "version": "1.0.0",
   "description": "This GitHub Action integrates the [PMAT tool](https://github.com/paiml/paiml-mcp-agent-toolkit) to automatically analyze the cyclomatic and cognitive complexity of your source code. It reports complexity violations directly in your Pull Requests, making it easy to maintain code quality and identify complex sections.",
   "main": "lib/main.js",
