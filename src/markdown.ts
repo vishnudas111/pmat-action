@@ -1,17 +1,13 @@
-export function generateMarkdown(pmatResult: any) {
-  if (pmatResult.violations.length === 0) {
-    return '';
+import { Violation } from './pmat';
+
+export function generateMarkdown(violations: Violation[], owner: string, repo: string, sha: string): string {
+  let commentBody = '## Automated Check Failed!\n\nCyclomatic complexity found:\n\n# Code Complexity Violations\n\n| Path | Severity | Value |\n|------|----------|-------|\n';
+
+  for (const violation of violations) {
+    const pr_file_path = `https://github.com/${owner}/${repo}/blob/${sha}/${violation.file}`
+    commentBody += `| [${violation.file}](${pr_file_path}) | ${violation.severity} | ${violation.value} |\n`;
   }
 
-  let comment = '## Automated Check Failed!\n';
-  comment += 'Cyclomatic complexity found:\n';
-  comment += '# Code Complexity Violations\n';
-  comment += '| Path | Severity | Value |\n';
-  comment += '| ---- | -------- | ----- |\n';
-
-  for (const violation of pmatResult.violations) {
-    comment += `| [${violation.file}](${violation.file}) | ${violation.severity} | ${violation.value} |\n`;
-  }
-
-  return comment;
+  return commentBody;
 }
+
