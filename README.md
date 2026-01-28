@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Check project complexity
-        uses: paiml/pmat-action@v1 # Replace with the correct version
+        uses: vishnudas111/pmat-action@v1 # Replace with the correct version
         with:
           max-cyclomatic: 20
           fail-on-violation: true
