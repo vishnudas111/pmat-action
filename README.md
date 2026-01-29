@@ -46,17 +46,9 @@ You can configure the action with the following inputs:
 
 When violations are detected, the action will post a comment similar to this in your Pull Request:
 
-## Automated Check Failed!
-### Code Complexity Violations
-| Path | Severity | Value |
-| ---- | -------- | ----- |
-| [./src/server/watcher.rs](./src/server/watcher.rs) | error | 12 |
-| [./src/server/watcher.rs](./src/server/watcher.rs) | warning | 18 |
+![Example Pull Request Comment](lib/screenshot.png)
+
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a pull request or open an issue.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
