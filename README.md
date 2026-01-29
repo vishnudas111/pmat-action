@@ -46,8 +46,12 @@ You can configure the action with the following inputs:
 
 When violations are detected, the action will post a comment similar to this in your Pull Request:
 
-![Example Pull Request Comment](lib/screenshot.png)
-
+## Automated Check Failed!
+### Code Complexity Violations
+| Path | Severity | Value |
+| ---- | -------- | ----- |
+| [./src/server/watcher.rs](./src/server/watcher.rs) | error | 12 |
+| [./src/server/watcher.rs](./src/server/watcher.rs) | warning | 18 |
 
 ## Contributing
 
